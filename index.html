@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Y2K Photo Collage Maker - Free Online Tool | Y2KCollage</title>
+  <meta name="description" content="Free AI-powered Y2K photo collage maker. Turn your photo into a Y2K photocard (gu ka) style collage poster in seconds — no sign-up, no download required." />
+  <meta name="keywords" content="y2k photo collage maker, y2k collage maker, y2k aesthetic collage, y2k magazine poster" />
+  <link rel="canonical" href="https://y2kcollage.pages.dev/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Y2K Photo Collage Maker - Free AI Tool" />
+  <meta property="og:description" content="Turn your photo into a Y2K photocard (gu ka) style poster with AI — free, no sign-up." />
+  <meta property="og:type" content="website" />
+
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink: #ff6ec7;
+      --purple: #c77dff;
+      --cyan: #00f5ff;
+      --gold: #ffd700;
+      --bg: #0d0015;
+      --surface: #1a0030;
+      --surface2: #250045;
+      --text: #f0e6ff;
+      --text-dim: #b09cc0;
+      --radius: 16px;
+      --font-display: 'Trebuchet MS', 'Arial Black', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Starfield ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 20% 30%, #fff 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 10%, #ff6ec7 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 50%, #00f5ff 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 80%, #ffd700 0%, transparent 100%),
+        radial-gradient(1px 1px at 10% 60%, #c77dff 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 20%, #fff 0%, transparent 100%),
+        radial-gradient(1px 1px at 50% 50%, #ff6ec7 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 70%, #00f5ff 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    header, main, footer { position: relative; z-index: 1; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 60px 0; }
+
+    /* ── Header ── */
+    header {
+      padding: 18px 0;
+      border-bottom: 1px solid #ffffff18;
+      background: linear-gradient(135deg, #1a003080 0%, #00001580 100%);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .brand {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--pink), var(--cyan), var(--gold));
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    /* ── Hero ── */
+    .hero { text-align: center; padding: 70px 0 50px; }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--pink) 0%, var(--cyan) 50%, var(--gold) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      text-shadow: none;
+    }
+    .hero .tagline {
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      max-width: 560px;
+      margin: 0 auto 28px;
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--pink)33, var(--purple)33);
+      border: 1px solid var(--pink)66;
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 0.85rem;
+      color: var(--pink);
+      margin: 0 6px 8px;
+    }
+
+    /* ── Tool Card ── */
+    .tool-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--purple)44;
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: 0 0 60px var(--purple)22, 0 8px 32px #00000060;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed var(--purple)88;
+      border-radius: var(--radius);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--bg)66;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--pink);
+      background: var(--pink)11;
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+    .upload-hint { color: var(--text-dim); font-size: 0.9rem; margin-top: 8px; }
+    #preview-area { display: none; position: relative; }
+    #preview-canvas {
+      width: 100%; border-radius: var(--radius);
+      display: block;
+      border: 2px solid var(--purple)66;
+    }
+    .change-photo-btn {
+      margin-top: 12px;
+      background: transparent;
+      border: 1px solid var(--purple)88;
+      color: var(--text-dim);
+      padding: 6px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .change-photo-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+    /* Turnstile */
+    .turnstile-wrap { margin: 24px 0 0; display: flex; justify-content: center; }
+
+    /* Generate Button */
+    #gen-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 18px;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--pink), var(--purple), var(--cyan));
+      color: #fff;
+      box-shadow: 0 4px 24px var(--pink)55;
+      transition: opacity 0.2s, transform 0.1s;
+      text-transform: uppercase;
+    }
+    #gen-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    #gen-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* Loading */
+    #loading-state {
+      display: none;
+      text-align: center;
+      padding: 36px;
+    }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid var(--purple)44;
+      border-top-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-msg { color: var(--text-dim); font-size: 0.95rem; }
+    .loading-tips { margin-top: 10px; font-size: 0.8rem; color: var(--purple); }
+
+    /* Error */
+    #error-state {
+      display: none;
+      background: #ff3b3b18;
+      border: 1px solid #ff3b3b66;
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #error-msg { color: #ff8888; margin-bottom: 12px; }
+    .retry-btn {
+      background: transparent;
+      border: 1px solid #ff888888;
+      color: #ff8888;
+      padding: 8px 24px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .retry-btn:hover { background: #ff3b3b22; }
+
+    /* Result */
+    #result-state { display: none; margin-top: 24px; }
+    .compare-wrap {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 2px solid var(--gold)66;
+      background: #000;
+      user-select: none;
+      touch-action: none;
+    }
+    .compare-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: contain;
+    }
+    #img-original {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+    .slider-overlay {
+      position: absolute; top: 0; left: 50%; height: 100%;
+      pointer-events: none;
+      border-left: 3px solid #fff;
+    }
+    .slider-handle {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      cursor: ew-resize;
+      pointer-events: all;
+      box-shadow: 0 2px 12px #00000088;
+      z-index: 10;
+    }
+    .result-actions {
+      display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;
+    }
+    .dl-btn, .regen-btn {
+      flex: 1; min-width: 140px;
+      padding: 14px;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+    .dl-btn {
+      background: linear-gradient(135deg, var(--gold), #ffaa00);
+      color: #000;
+    }
+    .regen-btn {
+      background: transparent;
+      border: 2px solid var(--purple)88;
+      color: var(--purple);
+    }
+    .dl-btn:hover, .regen-btn:hover { opacity: 0.85; }
+
+    /* Examples */
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .example-card {
+      background: var(--surface);
+      border: 1px solid var(--purple)33;
+      border-radius: var(--radius);
+      overflow: hidden;
+      padding: 16px;
+    }
+    .example-placeholder {
+      height: 200px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 2.4rem;
+    }
+    .example-placeholder.before {
+      background: linear-gradient(135deg, #2a1a3a, #1a0a2a);
+    }
+    .example-placeholder.after {
+      background: linear-gradient(135deg, #ff6ec7, #c77dff, #00f5ff);
+    }
+    .example-label { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-top: 8px; }
+    .example-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 1.5rem; padding: 8px 0;
+    }
+
+    /* Steps / How-it-works */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--purple)33;
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1.1rem;
+      margin: 0 auto 14px;
+    }
+
+    /* FAQ */
+    .faq-list { margin-top: 32px; }
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--purple)33;
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 18px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      list-style: none;
+    }
+    .faq-q::after { content: '+'; font-size: 1.3rem; color: var(--pink); flex-shrink: 0; margin-left: 12px; }
+    .faq-item.open .faq-q::after { content: '−'; }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      padding: 0 20px;
+    }
+    .faq-item.open .faq-a { max-height: 400px; padding: 0 20px 18px; }
+
+    /* Section headings */
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      background: linear-gradient(90deg, var(--pink), var(--cyan));
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .section-lead { color: var(--text-dim); max-width: 620px; }
+
+    /* Footer */
+    footer {
+      padding: 36px 0;
+      border-top: 1px solid #ffffff14;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--purple); text-decoration: none; }
+    footer a:hover { color: var(--pink); }
+
+    /* Utility */
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    @media (max-width: 600px) {
+      .tool-card { padding: 20px 14px; }
+      section { padding: 40px 0; }
+    }
+  </style>
+
+  <!-- FAQPage + HowTo Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is this Y2K photo collage maker free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, the tool is completely free to use. You can generate up to 8 Y2K collage posters per day per device. No credit card or account required."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need to sign up or download an app?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No sign-up and no download needed. Everything runs in your browser. Just upload a photo and hit generate."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens to my uploaded photo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Your photo is sent securely to Google Gemini AI for style transformation and is not stored on our servers after processing. We do not retain your original photo or the generated image — both are discarded after the request is complete. We never use your photos to train AI models."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How long does it take to generate my collage?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AI generation typically takes 10–20 seconds depending on server load. You will see a loading indicator while it processes."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What photo formats are supported?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "JPG, PNG, and WebP are supported. Maximum file size is 8 MB. For best results, use a clear photo with a single subject."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to Make a Y2K Photo Collage",
+        "step": [
+          { "@type": "HowToStep", "name": "Upload your photo", "text": "Click or drag-and-drop your JPG, PNG or WebP photo into the upload area." },
+          { "@type": "HowToStep", "name": "Complete verification and generate", "text": "Pass the quick human verification, then click Generate My Y2K Poster." },
+          { "@type": "HowToStep", "name": "Download your collage", "text": "Preview the before/after comparison, then download your Y2K collage poster." }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="container">
+    <span class="brand">✦ Y2KCollage</span>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <h1>Y2K Photo Collage Maker</h1>
+    <p class="tagline">Turn your photo into a Y2K photocard (gu ka) style poster with AI — free, no sign-up, no download required.</p>
+    <span class="badge">AI-Powered</span>
+    <span class="badge">Free</span>
+    <span class="badge">No Sign-Up</span>
+  </div>
+</section>
+
+<!-- ── TOOL ── -->
+<section id="tool-section">
+  <div class="container">
+    <div class="tool-card">
+
+      <!-- Upload -->
+      <div id="upload-area">
+        <div class="upload-zone" id="drop-zone" role="button" aria-label="Upload photo">
+          <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" aria-label="Select photo file" />
+          <span class="upload-icon">📸</span>
+          <strong>Click to upload or drag &amp; drop</strong>
+          <p class="upload-hint">JPG · PNG · WebP · Max 8 MB</p>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div id="preview-area">
+        <canvas id="preview-canvas" aria-label="Photo preview"></canvas>
+        <div style="text-align:center">
+          <button class="change-photo-btn" id="change-btn">Change photo</button>
+        </div>
+      </div>
+
+      <!-- Turnstile -->
+      <div class="turnstile-wrap">
+        <div class="cf-turnstile" data-sitekey="REPLACE_WITH_YOUR_TURNSTILE_SITE_KEY" id="turnstile-widget"></div>
+      </div>
+
+      <!-- Generate button -->
+      <button id="gen-btn" disabled>Generate My Y2K Poster ✦</button>
+
+      <!-- Loading -->
+      <div id="loading-state" aria-live="polite">
+        <div class="spinner"></div>
+        <p class="loading-msg">Adding that retro magazine grain...</p>
+        <p class="loading-tips">This usually takes 10–20 seconds</p>
+      </div>
+
+      <!-- Error -->
+      <div id="error-state" role="alert">
+        <p id="error-msg">Something went wrong. Please try again.</p>
+        <button class="retry-btn" id="retry-btn">Try Again</button>
+      </div>
+
+      <!-- Result -->
+      <div id="result-state">
+        <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:12px;">Drag the slider to compare</p>
+        <div class="compare-wrap" id="compare-wrap">
+          <img id="img-result" src="" alt="Y2K aesthetic collage poster result" />
+          <img id="img-original" src="" alt="Original photo for comparison" />
+          <div class="slider-overlay" id="slider-line">
+            <div class="slider-handle" id="slider-handle" title="Drag to compare">⇄</div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="dl-btn" id="dl-btn">⬇ Download Poster</button>
+          <button class="regen-btn" id="regen-btn">↺ Regenerate</button>
+        </div>
+      </div>
+
+    </div><!-- /tool-card -->
+  </div>
+</section>
+
+<!-- ── EXAMPLES ── -->
+<section id="examples-section">
+  <div class="container">
+    <h2>Y2K Collage Examples</h2>
+    <p class="section-lead">See what the AI transformation looks like — Y2K photocard (gu ka) style.</p>
+    <div class="examples-grid">
+      <div class="example-card">
+        <div class="example-placeholder before">👤<br/><small style="color:#b09cc0;font-size:0.7rem">Original portrait</small></div>
+        <p class="example-label">Before — Regular selfie</p>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;">
+        <div class="example-arrow">→</div>
+      </div>
+      <div class="example-card">
+        <div class="example-placeholder after">✨🃏💖<br/><small style="font-size:0.7rem;color:#1a0030">Y2K Gu Ka Style</small></div>
+        <p class="example-label">After — Y2K photocard collage</p>
+      </div>
+    </div>
+    <p style="margin-top:18px;font-size:0.8rem;color:var(--text-dim)">
+      Note: Example previews are illustrative. Real results are generated from <em>your</em> photo. Add your own screenshots here after testing.
+    </p>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how-it-works">
+  <div class="container">
+    <h2>How to Make a Y2K Photo Collage</h2>
+    <p class="section-lead">Create your own y2k aesthetic collage in three simple steps.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <strong>Upload your photo</strong>
+        <p style="margin-top:8px;color:var(--text-dim);font-size:0.9rem">JPG, PNG or WebP. We auto-resize so it works on mobile too.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <strong>Hit Generate</strong>
+        <p style="margin-top:8px;color:var(--text-dim);font-size:0.9rem">AI transforms your shot into a Y2K photocard (gu ka) collage poster in ~15 seconds.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <strong>Download &amp; Share</strong>
+        <p style="margin-top:8px;color:var(--text-dim);font-size:0.9rem">Save your y2k collage maker result and post it anywhere you like.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHAT IS Y2K ── -->
+<section id="what-is-y2k">
+  <div class="container">
+    <h2>What is a Y2K Photo Collage?</h2>
+    <div style="max-width:700px">
+      <p>A <strong>Y2K photo collage</strong> captures the visual energy of the early 2000s — bold gradients, shiny chrome text, bubbly stickers, film grain, and that unmistakable "magazine cutout" energy. The <em>y2k aesthetic collage</em> trend resurged on TikTok and Pinterest in the 2020s as Gen Z rediscovered the chaotic optimism of millennium-era design.</p>
+      <p style="margin-top:14px">Our tool specialises in the <strong>Y2K photocard ("gu ka") aesthetic</strong> — highly saturated colours, sticker-style elements with bold white outlines, and dreamy layered compositions. Think of a Korean-style photocard mixed with Y2K graphic design: the result is instantly shareable and uniquely you. No Photoshop, no sign-up — just upload and let the AI handle it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq-section">
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" tabindex="0">Is this Y2K photo collage maker free?</div>
+        <div class="faq-a">Yes — completely free. You can generate up to 8 posters per day. No account, no credit card, no hidden paywall.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" tabindex="0">Do I need to sign up or download an app?</div>
+        <div class="faq-a">No download, no sign-up. It's 100% browser-based. Works on mobile and desktop.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" tabindex="0">What happens to my uploaded photo?</div>
+        <div class="faq-a">Your photo is transmitted securely to Google's Gemini AI service for style processing. <strong>We do not store your original photo or the generated result on our servers</strong> — both are discarded immediately after the request completes. Your image is never used to train any AI model.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" tabindex="0">How long does it take to generate my collage?</div>
+        <div class="faq-a">Typically 10–20 seconds. You'll see a progress animation while the AI is working. If it takes longer than 30 seconds, try again — AI APIs occasionally experience delays.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" tabindex="0">What photo formats are supported?</div>
+        <div class="faq-a">JPG, PNG, and WebP. Maximum 8 MB per image. For the best results, use a well-lit photo with a clear subject. Selfies and portraits work great.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <p>© 2026 Y2KCollage — Free AI-powered y2k collage maker</p>
+    <p style="margin-top:8px">
+      <a href="#faq-section">Privacy &amp; Data Usage</a> ·
+      <a href="mailto:hello@y2kcollage.pages.dev">Contact</a>
+    </p>
+    <p style="margin-top:10px;font-size:0.78rem;color:#6a5a7a">
+      Photos sent to Google Gemini AI for processing. Not stored. Not used for training. See FAQ above.
+    </p>
+  </div>
+</footer>
+
+<script>
+// ────────────────────────────────────────────────────────────────────
+// CONFIG — replace with your actual Worker URL after deployment
+// ────────────────────────────────────────────────────────────────────
+const WORKER_URL = 'https://y2k-collage-worker.YOUR-SUBDOMAIN.workers.dev';
+
+// ── State ─────────────────────────────────────────────────────────
+let uploadedFile = null;
+let originalDataUrl = null;
+let resultDataUrl = null;
+let turnstileToken = null;
+
+// ── Elements ──────────────────────────────────────────────────────
+const uploadArea   = document.getElementById('upload-area');
+const previewArea  = document.getElementById('preview-area');
+const dropZone     = document.getElementById('drop-zone');
+const fileInput    = document.getElementById('file-input');
+const previewCanvas= document.getElementById('preview-canvas');
+const changeBtn    = document.getElementById('change-btn');
+const genBtn       = document.getElementById('gen-btn');
+const loadingState = document.getElementById('loading-state');
+const errorState   = document.getElementById('error-state');
+const errorMsg     = document.getElementById('error-msg');
+const retryBtn     = document.getElementById('retry-btn');
+const resultState  = document.getElementById('result-state');
+const imgResult    = document.getElementById('img-result');
+const imgOriginal  = document.getElementById('img-original');
+const sliderLine   = document.getElementById('slider-line');
+const sliderHandle = document.getElementById('slider-handle');
+const compareWrap  = document.getElementById('compare-wrap');
+const dlBtn        = document.getElementById('dl-btn');
+const regenBtn     = document.getElementById('regen-btn');
+
+// ── Turnstile callback (global) ───────────────────────────────────
+window.onTurnstileSuccess = function(token) {
+  turnstileToken = token;
+  updateGenBtn();
+};
+window.onTurnstileExpired = function() {
+  turnstileToken = null;
+  updateGenBtn();
+};
+// Attach callbacks to widget after DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  const widget = document.querySelector('.cf-turnstile');
+  if (widget) {
+    widget.setAttribute('data-callback', 'onTurnstileSuccess');
+    widget.setAttribute('data-expired-callback', 'onTurnstileExpired');
+  }
+});
+
+function updateGenBtn() {
+  genBtn.disabled = !(uploadedFile && turnstileToken);
+}
+
+// ── File handling ─────────────────────────────────────────────────
+function handleFile(file) {
+  if (!file) return;
+  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowed.includes(file.type)) {
+    showError('Unsupported format. Please use JPG, PNG, or WebP.');
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    showError('File is too large. Please use an image under 8 MB.');
+    return;
+  }
+  uploadedFile = file;
+  renderPreview(file);
+}
+
+function renderPreview(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Normalise size: max 2048px long edge
+      const MAX = 2048;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        const ratio = Math.min(MAX / w, MAX / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      previewCanvas.width = w;
+      previewCanvas.height = h;
+      const ctx = previewCanvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      originalDataUrl = previewCanvas.toDataURL('image/jpeg', 0.9);
+
+      uploadArea.style.display = 'none';
+      previewArea.style.display = 'block';
+      hideStates();
+      updateGenBtn();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+dropZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  handleFile(e.dataTransfer.files[0]);
+});
+
+changeBtn.addEventListener('click', () => {
+  uploadedFile = null;
+  originalDataUrl = null;
+  resultDataUrl = null;
+  fileInput.value = '';
+  previewArea.style.display = 'none';
+  uploadArea.style.display = 'block';
+  hideStates();
+  updateGenBtn();
+});
+
+// ── Generation ────────────────────────────────────────────────────
+genBtn.addEventListener('click', generate);
+retryBtn.addEventListener('click', generate);
+regenBtn.addEventListener('click', generate);
+
+async function generate() {
+  if (!uploadedFile || !turnstileToken) return;
+
+  hideStates();
+  loadingState.style.display = 'block';
+  genBtn.disabled = true;
+
+  // Build FormData from canvas (compressed JPEG)
+  const blob = await canvasToBlob(previewCanvas, 'image/jpeg', 0.85);
+  const fd = new FormData();
+  fd.append('image', blob, 'photo.jpg');
+  fd.append('cf-turnstile-response', turnstileToken);
+
+  try {
+    const res = await fetch(`${WORKER_URL}/generate`, { method: 'POST', body: fd });
+    const data = await res.json();
+
+    if (!data.ok) {
+      showError(data.error || 'Generation failed. Please try again.');
+      return;
+    }
+
+    resultDataUrl = `data:${data.mimeType};base64,${data.image}`;
+    showResult(resultDataUrl);
+  } catch (err) {
+    showError('Connection error. Please check your network and try again.');
+  } finally {
+    loadingState.style.display = 'none';
+    // Reset Turnstile so user can generate again
+    if (window.turnstile) window.turnstile.reset();
+    turnstileToken = null;
+    updateGenBtn();
+  }
+}
+
+function canvasToBlob(canvas, type, quality) {
+  return new Promise(resolve => canvas.toBlob(resolve, type, quality));
+}
+
+// ── Display helpers ───────────────────────────────────────────────
+function hideStates() {
+  loadingState.style.display = 'none';
+  errorState.style.display = 'none';
+  resultState.style.display = 'none';
+}
+
+function showError(msg) {
+  loadingState.style.display = 'none';
+  errorMsg.textContent = msg;
+  errorState.style.display = 'block';
+}
+
+function showResult(dataUrl) {
+  imgResult.src = dataUrl;
+  imgOriginal.src = originalDataUrl;
+  resultState.style.display = 'block';
+  resultDataUrl = dataUrl;
+  setSlider(50);
+}
+
+// ── Before/After slider ───────────────────────────────────────────
+function setSlider(pct) {
+  pct = Math.max(0, Math.min(100, pct));
+  sliderLine.style.left = pct + '%';
+  imgOriginal.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+}
+
+function sliderPctFromEvent(e) {
+  const rect = compareWrap.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  return ((clientX - rect.left) / rect.width) * 100;
+}
+
+let dragging = false;
+sliderHandle.addEventListener('mousedown', () => dragging = true);
+sliderHandle.addEventListener('touchstart', () => dragging = true, { passive: true });
+document.addEventListener('mousemove', e => { if (dragging) setSlider(sliderPctFromEvent(e)); });
+document.addEventListener('touchmove', e => { if (dragging) setSlider(sliderPctFromEvent(e)); }, { passive: true });
+document.addEventListener('mouseup', () => dragging = false);
+document.addEventListener('touchend', () => dragging = false);
+
+// ── Download ──────────────────────────────────────────────────────
+dlBtn.addEventListener('click', () => {
+  if (!resultDataUrl) return;
+  const a = document.createElement('a');
+  a.href = resultDataUrl;
+  a.download = 'y2k-collage-poster.jpg';
+  a.click();
+});
+
+// ── FAQ accordion ─────────────────────────────────────────────────
+document.querySelectorAll('.faq-item').forEach(item => {
+  const q = item.querySelector('.faq-q');
+  const toggle = () => item.classList.toggle('open');
+  q.addEventListener('click', toggle);
+  q.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') toggle(); });
+});
+</script>
+</body>
+</html>
